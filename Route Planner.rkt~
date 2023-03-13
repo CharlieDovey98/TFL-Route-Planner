@@ -6,15 +6,7 @@
 (require racket/date) ; import racket date and time capabilities
  
                           #|      Group 4 TFL TRAVEL APP WITH GUI      Prototype 03 Graphs     |#
-;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Notes vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-; To Do:
-; write to and read from a json file
-; working map with plottable routes
-; zoomable images of underground lines
-; colourize syntax according to the line it belongs to
-; add a "change to 'line'" when user needs to change lines during their route
 
-;  (send (send this get-parent) saveRoute start destination route timeTaken lines "save.json")
 
 ;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Defintions vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 ; definitions for station names to prevent syntax errors when using them in code
@@ -80,20 +72,13 @@
   (Golders_Green "Golders Green") (Brent_Cross "Brent Cross") (Hendon_Central "Hendon Central") (Colindale "Colindale") (Burnt_Oak "Burnt Oak") (Edgware "Edgware")
   (Kentish_Town "Kentish Town") (Tufnell_Park "Tufnell Park") (Archway "Archway") (Highgate "Highgate") (East_Finchley "East Finchley") (Finchley_Central "Finchley Central")
   (Mill_Hill_East "Mill Hill East") (West_Finchley "West Finchley") (Woodside_Park "Woodside Park") (Totteridge_&_Whetstone "Totteridge & Whetstone") (High_Barnet "High Barnet")
-  ;  Northern Line Stations ^^^^              Bakerloo Line Stations vvvvv
-  (Harrow_&_Wealdstone "Harrow & Wealdstone") (Kenton "Kenton") (South_Kenton "South Kenton") (North_Wembley "North Wembley") (Wembley_Central "Wembley Central")
-  (Stonebridge_Park "Stonebridge Park") (Harlesden "Harlesden") (Willesden_Junction "Willesden Junction") (Kensal_Green "Kensal Green") (Queen_s_Park "Queen's Park")
-  (Kilburn_Park "Kilburn Park") (Maida_Vale "Maida Vale") (Warwick_Avenue "Warwick Avenue") (Marylebone "Marylebone") (Regent_s_Park "Regent's Park") (Lambeth_North "Lambeth North")
-  ;  Bakerloo Line Stations ^^^^
-  ;  Waterloo & city line stations are defined above
-  ;  Hammersmith& City line stations are defined above
+  ;  Northern Line Stations ^^^^              Northern Line Stations vvvvv
   )
 
 
 
 ;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv graphs vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 ; A list (londonunderground) representing a Graph with nested lists showing edges for all the nodes(stations)
-; this graph is built without showing all the edges for each line. Duplicates have been removed to prevent Errors in the DFS Algorithm
 
 (define londonunderground (list (list Walthamstow_Central Blackhorse_Road) (list Blackhorse_Road Tottenham_Hale) (list Tottenham_Hale Seven_Sisters) (list Seven_Sisters Finsbury_Park)
                                 (list Finsbury_Park Highbury_&_Islington) (list Highbury_&_Islington Kings_Cross_St_Pancras) (list Kings_Cross_St_Pancras Euston) (list Euston Warren_Street)
@@ -102,7 +87,7 @@
                                 (list Victoria Green_Park) (list Green_Park Oxford_Circus) (list Oxford_Circus Warren_Street) (list Warren_Street Euston) (list Euston Kings_Cross_St_Pancras)
                                 (list Kings_Cross_St_Pancras Highbury_&_Islington) (list Highbury_&_Islington Finsbury_Park) (list Finsbury_Park Seven_Sisters)
                                 (list Seven_Sisters Tottenham_Hale) (list Tottenham_Hale Blackhorse_Road) (list Blackhorse_Road Walthamstow_Central)
-                                ;  Victoria Line Edges without duplicates ^^^^              Circle Line Edges without duplicates vvvvv
+                                ;  Victoria Line part of the graph ^^^^              Circle Line part of the graph vvvvv
                                 (list Hammersmith Goldhawk_Road) (list Goldhawk_Road Shepherd_s_Bush_Market) (list Shepherd_s_Bush_Market Wood_Lane) (list Wood_Lane Latimer_Road)
                                 (list Latimer_Road Ladbroke_Grove) (list Ladbroke_Grove Westbourne_Park) (list Westbourne_Park Royal_Oak) (list Royal_Oak Paddington)
                                 (list Paddington Edgware_Road) (list Edgware_Road Baker_Street) (list Baker_Street Great_Portland_Street) (list Great_Portland_Street Euston_Square)
@@ -120,12 +105,12 @@
                                 (list Euston_Square Great_Portland_Street) (list Great_Portland_Street Baker_Street) (list Baker_Street Edgware_Road) (list Edgware_Road Paddington)
                                 (list Paddington Royal_Oak) (list Royal_Oak Westbourne_Park) (list Westbourne_Park Ladbroke_Grove) (list Ladbroke_Grove Latimer_Road)
                                 (list Latimer_Road Wood_Lane) (list Wood_Lane Shepherd_s_Bush_Market) (list Shepherd_s_Bush_Market Goldhawk_Road) (list Goldhawk_Road Hammersmith)
-                                ;  Circle Line Edges without duplicates ^^^^              Piccadilly Line Edges without duplicates vvvvv
+                                ;  Circle Line part of the graph ^^^^              Piccadilly Line part of the graph vvvvv
                                 (list Cockfosters Oakwood) (list Oakwood Southgate) (list Southgate Arnos_Grove) (list Arnos_Grove Bounds_Green) (list Bounds_Green Wood_Green)
                                 (list Wood_Green Turnpike_Lane) (list Turnpike_Lane Manor_House) (list Manor_House Finsbury_Park) (list Finsbury_Park Arsenal) (list Arsenal Holloway_Road)
                                 (list Holloway_Road Caledonian_Road) (list Caledonian_Road Kings_Cross_St_Pancras) (list Kings_Cross_St_Pancras Russell_Square) (list Russell_Square Holborn)
                                 (list Holborn Covent_Garden) (list Covent_Garden Leicester_Square) (list Leicester_Square Piccadilly_Circus) (list Piccadilly_Circus Green_Park)
-                                (list Green_Park Hyde_Park_Corner) (list Hyde_Park_Corner Knightsbridge) (list Knightsbridge South_Kensington)
+                                (list Green_Park Hyde_Park_Corner) (list Hyde_Park_Corner Knightsbridge) (list Knightsbridge South_Kensington) (list South_Kensington Gloucester_Road)
                                 (list Gloucester_Road Earl_s_Court) (list Earl_s_Court Barons_Court) (list Barons_Court Hammersmith) (list Hammersmith Turnham_Green)
                                 (list Turnham_Green Acton_Town) (list Acton_Town Ealing_Common) (list Ealing_Common North_Ealing) (list North_Ealing Park_Royal) (list Park_Royal Alperton)
                                 (list Alperton Sudbury_Town) (list Sudbury_Town Sudbury_Hill) (list Sudbury_Hill South_Harrow) (list South_Harrow Rayners_Lane) (list Rayners_Lane Eastcote)
@@ -138,35 +123,41 @@
                                 (list Hillingdon Ickenham) (list Ickenham Ruislip) (list Ruislip Ruislip_Manor) (list Ruislip_Manor Eastcote) (list Eastcote Rayners_Lane)
                                 (list Rayners_Lane South_Harrow) (list South_Harrow Sudbury_Hill) (list Sudbury_Hill Sudbury_Town) (list Sudbury_Town Alperton) (list Alperton Park_Royal)
                                 (list Park_Royal North_Ealing) (list North_Ealing Ealing_Common) (list Ealing_Common Acton_Town) (list Acton_Town Turnham_Green) (list Turnham_Green Hammersmith)
-                                (list Hammersmith Barons_Court) (list Barons_Court Earl_s_Court) (list Earl_s_Court Gloucester_Road)
+                                (list Hammersmith Barons_Court) (list Barons_Court Earl_s_Court) (list Earl_s_Court Gloucester_Road) (list Gloucester_Road South_Kensington)
                                 (list South_Kensington Knightsbridge) (list Knightsbridge Hyde_Park_Corner) (list Hyde_Park_Corner Green_Park) (list Green_Park Piccadilly_Circus)
                                 (list Piccadilly_Circus Leicester_Square) (list Leicester_Square Covent_Garden) (list Covent_Garden Holborn) (list Holborn Russell_Square)
                                 (list Russell_Square Kings_Cross_St_Pancras) (list Kings_Cross_St_Pancras Caledonian_Road) (list Caledonian_Road Holloway_Road) (list Holloway_Road Arsenal)
                                 (list Arsenal Finsbury_Park) (list Finsbury_Park Manor_House) (list Manor_House Turnpike_Lane) (list Turnpike_Lane Wood_Green) (list Wood_Green Bounds_Green)
                                 (list Bounds_Green Arnos_Grove) (list Arnos_Grove Southgate) (list Southgate Oakwood) (list Oakwood Cockfosters)
-                                ;  Piccadilly Line Edges without duplicates ^^^^              District Line Edges without duplicates vvvvv
+                                ;  Piccadilly Line Stations ^^^^              District Line Stations vvvvv
                                 (list Upminster Upminster_Bridge) (list Upminster_Bridge Hornchurch) (list Hornchurch Elm_Park) (list Elm_Park Dagenham_East) (list Dagenham_East Dagenham_Heathway)
                                 (list Dagenham_Heathway Becontree) (list Becontree Upney) (list Upney Barking) (list Barking East_Ham) (list East_Ham Upton_Park) (list Upton_Park Plaistow)
                                 (list Plaistow West_Ham) (list West_Ham Bromley-by-Bow) (list Bromley-by-Bow Bow_Road) (list Bow_Road Mile_End) (list Mile_End Stepney_Green)
-                                (list Stepney_Green Whitechapel) (list Whitechapel Aldgate_East) (list Aldgate_East Tower_Hill)
-                                (list Earl_s_Court High_Street_Kensington) 
-                                (list High_Street_Kensington Earl_s_Court) (list Earl_s_Court Kensington_Olympia)
-                                (list Kensington_Olympia Earl_s_Court) (list Earl_s_Court West_Kensington) (list West_Kensington Barons_Court)
+                                (list Stepney_Green Whitechapel) (list Whitechapel Aldgate_East) (list Aldgate_East Tower_Hill) (list Tower_Hill Monument) (list Monument Cannon_Street)
+                                (list Cannon_Street Mansion_House) (list Mansion_House Blackfriars) (list Blackfriars Temple) (list Temple Embankment) (list Embankment Westminster)
+                                (list Westminster St_James_s_Park) (list St_James_s_Park Victoria) (list Victoria Sloane_Square) (list Sloane_Square South_Kensington)
+                                (list South_Kensington Gloucester_Road) (list Earl_s_Court High_Street_Kensington)
+                                (list High_Street_Kensington Notting_Hill_Gate)
+                                (list Notting_Hill_Gate Bayswater) (list Bayswater Paddington) (list Paddington Edgware_Road) (list Edgware_Road Paddington) (list Paddington Bayswater)
+                                (list Bayswater Notting_Hill_Gate) (list Notting_Hill_Gate High_Street_Kensington) (list High_Street_Kensington Earl_s_Court) (list Earl_s_Court Kensington_Olympia)
+                                (list Kensington_Olympia Earl_s_Court) (list Earl_s_Court West_Kensington) (list West_Kensington Barons_Court) (list Barons_Court Hammersmith)
                                 (list Hammersmith Ravenscourt_Park) (list Ravenscourt_Park Stamford_Brook) (list Stamford_Brook Turnham_Green) (list Turnham_Green Chiswick_Park)
                                 (list Chiswick_Park Acton_Town) (list Ealing_Common Ealing_Broadway) (list Ealing_Broadway Ealing_Common)
                                 (list Acton_Town Chiswick_Park) (list Chiswick_Park Turnham_Green) (list Turnham_Green Gunnersbury) (list Gunnersbury Kew_Gardens) (list Kew_Gardens Gunnersbury)
                                 (list Gunnersbury Turnham_Green) (list Turnham_Green Stamford_Brook) (list Stamford_Brook Ravenscourt_Park) (list Ravenscourt_Park Hammersmith)
-                                (list Barons_Court West_Kensington) (list West_Kensington Earl_s_Court) (list Earl_s_Court West_Brompton)
+                                (list Hammersmith Barons_Court) (list Barons_Court West_Kensington) (list West_Kensington Earl_s_Court) (list Earl_s_Court West_Brompton)
                                 (list West_Brompton Fulham_Broadway) (list Fulham_Broadway Parsons_Green) (list Parsons_Green Putney_Bridge) (list Putney_Bridge East_Putney)
                                 (list East_Putney Southfields) (list Southfields Wimbledon_Park) (list Wimbledon_Park Wimbledon) (list Wimbledon Wimbledon_Park) (list Wimbledon_Park Southfields)
                                 (list Southfields East_Putney) (list East_Putney Putney_Bridge) (list Putney_Bridge Parsons_Green) (list Parsons_Green Fulham_Broadway)
-                                (list Fulham_Broadway West_Brompton) (list West_Brompton Earl_s_Court) 
-                                (list Tower_Hill Aldgate_East) (list Aldgate_East Whitechapel) (list Whitechapel Stepney_Green) (list Stepney_Green Mile_End)
+                                (list Fulham_Broadway West_Brompton) (list West_Brompton Earl_s_Court) (list Gloucester_Road South_Kensington)
+                                (list South_Kensington Sloane_Square) (list Sloane_Square Victoria) (list Victoria St_James_s_Park) (list St_James_s_Park Westminster) (list Westminster Embankment)
+                                (list Embankment Temple) (list Temple Blackfriars) (list Blackfriars Mansion_House) (list Mansion_House Cannon_Street) (list Cannon_Street Monument)
+                                (list Monument Tower_Hill) (list Tower_Hill Aldgate_East) (list Aldgate_East Whitechapel) (list Whitechapel Stepney_Green) (list Stepney_Green Mile_End)
                                 (list Mile_End Bow_Road) (list Bow_Road Bromley-by-Bow) (list Bromley-by-Bow West_Ham) (list West_Ham Plaistow) (list Plaistow Upton_Park)
                                 (list Upton_Park East_Ham) (list East_Ham Barking) (list Barking Upney) (list Upney Becontree) (list Becontree Dagenham_Heathway)
                                 (list Dagenham_Heathway Dagenham_East) (list Dagenham_East Elm_Park) (list Elm_Park Hornchurch) (list Hornchurch Upminster_Bridge)
                                 (list Upminster_Bridge Upminster)
-                                ;  District Line Edges without duplicates ^^^^              Central Line Edges without duplicates vvvvv
+                                ;  District Line Stations ^^^^              Central Line Stations vvvvv
                                 (list West_Ruislip Ruislip_Gardens) (list Ruislip_Gardens South_Ruislip) (list South_Ruislip Northolt) (list Northolt Greenford) (list Greenford Perivale)
                                 (list Perivale Hanger_Lane) (list Hanger_Lane North_Acton) (list North_Acton West_Acton) (list West_Acton Ealing_Broadway) (list Ealing_Broadway West_Acton)
                                 (list West_Acton North_Acton) (list North_Acton East_Acton) (list East_Acton White_City) (list White_City Shepherd_s_Bush) (list Shepherd_s_Bush Holland_Park)
@@ -187,9 +178,20 @@
                                 (list Lancaster_Gate Queensway) (list Queensway Notting_Hill_Gate) (list Notting_Hill_Gate Holland_Park) (list Holland_Park Shepherd_s_Bush)
                                 (list Shepherd_s_Bush White_City) (list White_City East_Acton) (list East_Acton North_Acton) (list North_Acton Hanger_Lane) (list Hanger_Lane Perivale)
                                 (list Perivale Greenford) (list Greenford Northolt) (list Northolt South_Ruislip) (list South_Ruislip Ruislip_Gardens) (list Ruislip_Gardens West_Ruislip)
-                                ;  Central Line Edges without duplicates ^^^^              Hammersmith & City Line Edges without duplicates vvvvv
-                                (list Liverpool_Street Aldgate_East) (list Aldgate_East Liverpool_Street) 
-                                ;  Hammersmith & City Line Edges without duplicates ^^^^              Jubilee Line Edges without duplicates vvvvv
+                                ;  Central Line Stations ^^^^              Hammersmith & City Line Stations vvvvv
+                                (list Hammersmith Goldhawk_Road) (list Goldhawk_Road Shepherd_s_Bush_Market) (list Shepherd_s_Bush_Market Wood_Lane) (list Wood_Lane Latimer_Road)
+                                (list Latimer_Road Ladbroke_Grove) (list Ladbroke_Grove Westbourne_Park) (list Westbourne_Park Royal_Oak) (list Royal_Oak Paddington) (list Paddington Edgware_Road)
+                                (list Edgware_Road Baker_Street) (list Baker_Street Great_Portland_Street) (list Great_Portland_Street Euston_Square) (list Euston_Square Kings_Cross_St_Pancras)
+                                (list Kings_Cross_St_Pancras Farringdon) (list Farringdon Barbican) (list Barbican Moorgate) (list Moorgate Liverpool_Street) (list Liverpool_Street Aldgate_East)
+                                (list Aldgate_East Whitechapel) (list Whitechapel Stepney_Green) (list Stepney_Green Mile_End) (list Mile_End Bow_Road) (list Bow_Road Bromley-by-Bow)
+                                (list Bromley-by-Bow West_Ham) (list West_Ham Plaistow) (list Plaistow Upton_Park) (list Upton_Park East_Ham) (list East_Ham Barking) (list Barking East_Ham)
+                                (list East_Ham Upton_Park) (list Upton_Park Plaistow) (list Plaistow West_Ham) (list West_Ham Bromley-by-Bow) (list Bromley-by-Bow Bow_Road) (list Bow_Road Mile_End)
+                                (list Mile_End Stepney_Green) (list Stepney_Green Whitechapel) (list Whitechapel Aldgate_East) (list Aldgate_East Liverpool_Street) (list Liverpool_Street Moorgate)
+                                (list Moorgate Barbican) (list Barbican Farringdon) (list Farringdon Kings_Cross_St_Pancras) (list Kings_Cross_St_Pancras Euston_Square)
+                                (list Euston_Square Great_Portland_Street) (list Great_Portland_Street Baker_Street) (list Baker_Street Edgware_Road) (list Edgware_Road Paddington)
+                                (list Paddington Royal_Oak) (list Royal_Oak Westbourne_Park) (list Westbourne_Park Ladbroke_Grove) (list Ladbroke_Grove Latimer_Road) (list Latimer_Road Wood_Lane)
+                                (list Wood_Lane Shepherd_s_Bush_Market) (list Shepherd_s_Bush_Market Goldhawk_Road) (list Goldhawk_Road Hammersmith)
+                                ;  Hammersmith & City Line Stations ^^^^              Jubilee Line Stations vvvvv
                                 (list Stanmore Canons_Park) (list Canons_Park Queensbury) (list Queensbury Kingsbury) (list Kingsbury Wembley_Park) (list Wembley_Park Neasden)
                                 (list Neasden Dollis_Hill) (list Dollis_Hill Willesden_Green) (list Willesden_Green Kilburn) (list Kilburn West_Hampstead) (list West_Hampstead Finchley_road)
                                 (list Finchley_road Swiss_Cottage) (list Swiss_Cottage St_John_s_Wood) (list St_John_s_Wood Baker_Street) (list Baker_Street Bond_Street)
@@ -202,28 +204,32 @@
                                 (list Baker_Street St_John_s_Wood) (list St_John_s_Wood Swiss_Cottage) (list Swiss_Cottage Finchley_road) (list Finchley_road West_Hampstead)
                                 (list West_Hampstead Kilburn) (list Kilburn Willesden_Green) (list Willesden_Green Dollis_Hill) (list Dollis_Hill Neasden) (list Neasden Wembley_Park)
                                 (list Wembley_Park Kingsbury) (list Kingsbury Queensbury) (list Queensbury Canons_Park) (list Canons_Park Stanmore)
-                                ;  Jubilee Line Edges without duplicates ^^^^              Metropolitan Line Edges without duplicates vvvvv
-                                (list Baker_Street Finchley_Road) (list Finchley_Road Wembley_Park) (list Wembley_Park Preston_Road) (list Preston_Road Northwick_Park)
-                                (list Northwick_Park Harrow-on-the-Hill) (list Harrow-on-the-Hill West_Harrow) (list West_Harrow Rayners_Lane) 
-                                (list Rayners_Lane West_Harrow) (list West_Harrow Harrow-on-the-Hill)
+                                ;  Jubilee Line Stations ^^^^              Metropolitan Line Stations vvvvv
+                                (list Aldgate Liverpool_Street) (list Liverpool_Street Moorgate) (list Moorgate Barbican) (list Barbican Farringdon) (list Farringdon Kings_Cross_St_Pancras)
+                                (list Kings_Cross_St_Pancras Euston_Square) (list Euston_Square Great_Portland_Street) (list Great_Portland_Street Baker_Street) (list Baker_Street Finchley_Road)
+                                (list Finchley_Road Wembley_Park) (list Wembley_Park Preston_Road) (list Preston_Road Northwick_Park) (list Northwick_Park Harrow-on-the-Hill)
+                                (list Harrow-on-the-Hill West_Harrow) (list West_Harrow Rayners_Lane) (list Rayners_Lane Eastcote) (list Eastcote Ruislip_Manor) (list Ruislip_Manor Ruislip)
+                                (list Ruislip Ickenham) (list Ickenham Hillingdon) (list Hillingdon Uxbridge) (list Uxbridge Hillingdon) (list Hillingdon Ickenham) (list Ickenham Ruislip)
+                                (list Ruislip Ruislip_Manor) (list Ruislip_Manor Eastcote) (list Eastcote Rayners_Lane) (list Rayners_Lane West_Harrow) (list West_Harrow Harrow-on-the-Hill)
                                 (list Harrow-on-the-Hill North_Harrow) (list North_Harrow Pinner) (list Pinner Northwood_Hills) (list Northwood_Hills Northwood) (list Northwood Moor_Park)
                                 (list Moor_Park Croxley) (list Croxley Watford) (list Watford Croxley) (list Croxley Moor_Park) (list Moor_Park Rickmansworth) (list Rickmansworth Chorleywood)
                                 (list Chorleywood Chalfont_&_Latimer) (list Chalfont_&_Latimer Chesham) (list Chesham Chalfont_&_Latimer) (list Chalfont_&_Latimer Amersham)
                                 (list Amersham Chalfont_&_Latimer) (list Chalfont_&_Latimer Chorleywood) (list Chorleywood Rickmansworth) (list Rickmansworth Moor_Park) (list Moor_Park Northwood)
                                 (list Northwood Northwood_Hills) (list Northwood_Hills Pinner) (list Pinner North_Harrow) (list North_Harrow Harrow-on-the-Hill)
                                 (list Harrow-on-the-Hill Northwick_Park) (list Northwick_Park Preston_Road) (list Preston_Road Wembley_Park) (list Wembley_Park Finchley_Road)
-                                (list Finchley_Road Baker_Street)
-                                ;  Metropolitan Line Edges without duplicates ^^^^              Northern Line Edges without duplicates vvvvv
+                                (list Finchley_Road Baker_Street) (list Baker_Street Great_Portland_Street) (list Great_Portland_Street Euston_Square) (list Euston_Square Kings_Cross_St_Pancras)
+                                (list Kings_Cross_St_Pancras Farringdon) (list Farringdon Barbican) (list Barbican Moorgate) (list Moorgate Liverpool_Street) (list Liverpool_Street Aldgate)
+                                ;  Metropolitan Line Stations ^^^^              Northern Line Stations vvvvv
                                 (list Morden South_Wimbledon) (list South_Wimbledon Colliers_Wood) (list Colliers_Wood Tooting_Broadway) (list Tooting_Broadway Tooting_Bec)
                                 (list Tooting_Bec Balham) (list Balham Clapham_South) (list Clapham_South Clapham_Common) (list Clapham_Common Clapham_North) (list Clapham_North Stockwell)
                                 (list Stockwell Oval) (list Oval Kennington) (list Kennington Nine_Elms) (list Nine_Elms Battersea_Power_Station) (list Battersea_Power_Station Nine_Elms)
                                 (list Nine_Elms Kennington) (list Kennington Waterloo) (list Waterloo Embankment) (list Embankment Charing_Cross) (list Charing_Cross Leicester_Square)
-                                (list Leicester_Square Tottenham_Court_Road) (list Tottenham_Court_Road Goodge_Street) (list Goodge_Street Warren_Street)
+                                (list Leicester_Square Tottenham_Court_Road) (list Tottenham_Court_Road Goodge_Street) (list Goodge_Street Warren_Street) (list Warren_Street Euston)
                                 (list Euston Mornington_Crescent) (list Mornington_Crescent Camden_Town) (list Camden_Town Mornington_Crescent) (list Mornington_Crescent Euston)
-                                (list Warren_Street Goodge_Street) (list Goodge_Street Tottenham_Court_Road) (list Tottenham_Court_Road Leicester_Square)
+                                (list Euston Warren_Street) (list Warren_Street Goodge_Street) (list Goodge_Street Tottenham_Court_Road) (list Tottenham_Court_Road Leicester_Square)
                                 (list Leicester_Square Charing_Cross) (list Charing_Cross Embankment) (list Embankment Waterloo) (list Waterloo Kennington) (list Kennington Elephant_&_Castle)
                                 (list Elephant_&_Castle Borough) (list Borough London_Bridge) (list London_Bridge Bank) (list Bank Moorgate) (list Moorgate Old_Street) (list Old_Street Angel)
-                                (list Angel Kings_Cross_St_Pancras) (list Euston Camden_Town) (list Camden_Town Chalk_Farm) (list Chalk_Farm Belsize_Park)
+                                (list Angel Kings_Cross_St_Pancras) (list Kings_Cross_St_Pancras Euston) (list Euston Camden_Town) (list Camden_Town Chalk_Farm) (list Chalk_Farm Belsize_Park)
                                 (list Belsize_Park Hampstead) (list Hampstead Golders_Green) (list Golders_Green Brent_Cross) (list Brent_Cross Hendon_Central) (list Hendon_Central Colindale)
                                 (list Colindale Burnt_Oak) (list Burnt_Oak Edgware) (list Edgware Burnt_Oak) (list Burnt_Oak Colindale) (list Colindale Hendon_Central)
                                 (list Hendon_Central Brent_Cross) (list Brent_Cross Golders_Green) (list Golders_Green Hampstead) (list Hampstead Belsize_Park) (list Belsize_Park Chalk_Farm)
@@ -232,27 +238,18 @@
                                 (list Finchley_Central West_Finchley) (list West_Finchley Woodside_Park) (list Woodside_Park Totteridge_&_Whetstone) (list Totteridge_&_Whetstone High_Barnet)
                                 (list High_Barnet Totteridge_&_Whetstone) (list Totteridge_&_Whetstone Woodside_Park) (list Woodside_Park West_Finchley) (list West_Finchley Finchley_Central)
                                 (list Finchley_Central East_Finchley) (list East_Finchley Highgate) (list Highgate Archway) (list Archway Tufnell_Park) (list Tufnell_Park Kentish_Town)
-                                (list Kentish_Town Camden_Town) (list Camden_Town Euston) (list Kings_Cross_St_Pancras Angel) (list Angel Old_Street)
+                                (list Kentish_Town Camden_Town) (list Camden_Town Euston) (list Euston Kings_Cross_St_Pancras) (list Kings_Cross_St_Pancras Angel) (list Angel Old_Street)
                                 (list Old_Street Moorgate) (list Moorgate Bank) (list Bank London_Bridge) (list London_Bridge Borough) (list Borough Elephant_&_Castle)
                                 (list Elephant_&_Castle Kennington) (list Kennington Oval) (list Oval Stockwell) (list Stockwell Clapham_North) (list Clapham_North Clapham_Common)
                                 (list Clapham_Common Clapham_South) (list Clapham_South Balham) (list Balham Tooting_Bec) (list Tooting_Bec Tooting_Broadway)
                                 (list Tooting_Broadway Colliers_Wood) (list Colliers_Wood South_Wimbledon) (list South_Wimbledon Morden)
-                                ;  Northern Line Edges without duplicates ^^^^              Bakerloo Line Edges without duplicates vvvvv
-                                (list Harrow_&_Wealdstone Kenton) (list Kenton South_Kenton) (list South_Kenton North_Wembley) (list North_Wembley  Wembley_Central)
-                                (list Wembley_Central Stonebridge_Park) (list Stonebridge_Park Harlesden) (list Harlesden Willesden_Junction) (list Willesden_Junction Kensal_Green)
-                                (list Kensal_Green Queen_s_Park) (list Queen_s_Park Kilburn_Park) (list Kilburn_Park Maida_Vale) (list Maida_Vale Warwick_Avenue)
-                                (list Warwick_Avenue Paddington) (list Edgware_Road Marylebone) (list Marylebone Baker_Street)
-                                (list Baker_Street Regent_s_Park) (list Regent_s_Park Oxford_Circus) (list Oxford_Circus Piccadilly_Circus) (list Piccadilly_Circus Charing_Cross)
-                                (list Waterloo Lambeth_North) (list Lambeth_North Elephant_&_Castle) (list Elephant_&_Castle Lambeth_North) (list Lambeth_North Waterloo) 
-                                (list Charing_Cross Piccadilly_Circus) (list Piccadilly_Circus Oxford_Circus) (list Oxford_Circus Regent_s_Park) (list Regent_s_Park Baker_Street)
-                                (list Baker_Street Marylebone) (list Marylebone Edgware_Road) (list Paddington Warwick_Avenue)
-                                (list Warwick_Avenue Maida_Vale) (list Maida_Vale Kilburn_Park) (list Kilburn_Park Queen_s_Park) (list Queen_s_Park Kensal_Green)
-                                (list Kensal_Green Willesden_Junction) (list Willesden_Junction Harlesden) (list Harlesden Stonebridge_Park) (list Stonebridge_Park Wembley_Central)
-                                (list Wembley_Central North_Wembley) (list North_Wembley South_Kenton) (list South_Kenton Kenton) (list Kenton Harrow_&_Wealdstone)
-                                ;  Bakerloo Line Edges without duplicates ^^^^              Waterloo & City Line Edges without duplicates vvvvv
-                                (list Bank Waterloo) (list Waterloo Bank)
-                                ;  Waterloo & City Line Edges without duplicates ^^^^
+                                ;  Northern Line Stations ^^^^              Northern Line Stations vvvvv
                                 ))
+;(definemore 
+;(Oakhymbmhjjwood "Oakwood") (Oafdkgjnmwood "Oakwood") (Oakdfcxdgwood "Oakwood") (Oakasdcmjmjwood "Oakwood") (Oakdfkkewood "Oakwood") (Oakwdgfgaotgtfrod "Oakwood") (Oakwkagfriujood "Oakwood")
+;(Oakhymbmhjjwood "Oakwood") (Oafdkgjnmwood "Oakwood") (Oakdfcxdgwood "Oakwood") (Oakasdcmjmjwood "Oakwood") (Oakdfkkewood "Oakwood") (Oakwdgfgaotgtfrod "Oakwood") (Oakwkagfriujood "Oakwood")
+;(Oakhymbmhjjwood "Oakwood") (Oafdkgjnmwood "Oakwood") (Oakdfcxdgwood "Oakwood") (Oakasdcmjmjwood "Oakwood") (Oakdfkkewood "Oakwood") (Oakwdgfgaotgtfrod "Oakwood") (Oakwkagfriujood "Oakwood")  
+;)
 
 ; vertices of the above graph, gethered through flattening and removing duplicates 
 #; (remove-duplicates (flatten londonunderground))
