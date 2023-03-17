@@ -4,7 +4,7 @@
 (require racket/trace); import trace functionality
 (require racket/gui map-widget) ;import map-widget library
 (require racket/date) ; import racket date and time capabilities
- 
+
                           #|      Group 4 TFL TRAVEL APP WITH GUI      Prototype 03 Graphs     |#
 ;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Notes vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -29,18 +29,18 @@
 (define london #(51.5074 -0.1278))
 
 ; definitions for image locations
-#;(definemore (Tube_map_image "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Tube-map-image.png")
-  (Central_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Central-line-map.png")
-  (Circle_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Circle-line-map.png")
-  (District_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/District-line-map.png")
-  (Hammersmith_city_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Hammersmith-city-line-map.png")
-  (Jubilee_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Jubilee-line-map.png")
-  (Metropolitan_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Metropolitan-line-map.png")
-  (Northern_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Northern-line-map.png")
-  (Piccadilly_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Piccadilly-line-map.png")
-  (Victoria_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Victoria-line-map.png")
-  (Waterloo_city_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Waterloo-city-line-map.png")
-  (Bakerloo_line_map "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Bakerloo-line-map.png"))
+#;(definemore (Tube_map_image "Tube-map-image.png")
+  (Central_line_map "Central-line-map.png")
+  (Circle_line_map "Circle-line-map.png")
+  (District_line_map "District-line-map.png")
+  (Hammersmith_city_line_map "Hammersmith-city-line-map.png")
+  (Jubilee_line_map "Jubilee-line-map.png")
+  (Metropolitan_line_map "Metropolitan-line-map.png")
+  (Northern_line_map "Northern-line-map.png")
+  (Piccadilly_line_map "Piccadilly-line-map.png")
+  (Victoria_line_map "Victoria-line-map.png")
+  (Waterloo_city_line_map "Waterloo-city-line-map.png")
+  (Bakerloo_line_map "Bakerloo-line-map.png"))
 
 #;(define line_maps (list Tube_map_image Central_line_map Circle_line_map District_line_map Hammersmith_city_line_map Jubilee_line_map Metropolitan_line_map Northern_line_map
                         Piccadilly_line_map Victoria_line_map Waterloo_city_line_map Bakerloo_line_map))
@@ -338,6 +338,8 @@
 (send base_frame show #t)
 ;          vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv code body vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+(define imagefolder (path->string (build-path (current-directory) "TFL-Route-Planner\\Images"))) ;A path to the Image folder where all nesseccary images are contained for the project
+(define getfilepath (lambda (filename) (string-append imagefolder "\\" filename)))
 
 (define (edge x graph) (map (λ (y) (first(rest y))) (filter(λ (y) (equal? (car y) x)) graph )))
 
