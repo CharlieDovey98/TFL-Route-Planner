@@ -4,6 +4,7 @@
 (require racket/trace); import trace functionality
 (require racket/gui map-widget) ;import map-widget library
 (require racket/date) ; import racket date and time capabilities
+(require json)        ; import JSON file capabilities
 
                           #|      Group 4 TFL TRAVEL APP WITH GUI      Prototype 03 Graphs     |#
 ;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Notes vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -28,21 +29,24 @@
 ; Map locations:
 (define london #(51.5074 -0.1278))
 
-; definitions for image locations
-#;(definemore (Tube_map_image "Tube-map-image.png")
-  (Central_line_map "Central-line-map.png")
-  (Circle_line_map "Circle-line-map.png")
-  (District_line_map "District-line-map.png")
-  (Hammersmith_city_line_map "Hammersmith-city-line-map.png")
-  (Jubilee_line_map "Jubilee-line-map.png")
-  (Metropolitan_line_map "Metropolitan-line-map.png")
-  (Northern_line_map "Northern-line-map.png")
-  (Piccadilly_line_map "Piccadilly-line-map.png")
-  (Victoria_line_map "Victoria-line-map.png")
-  (Waterloo_city_line_map "Waterloo-city-line-map.png")
-  (Bakerloo_line_map "Bakerloo-line-map.png"))
+(define image_folder (path->string (build-path (current-directory) "TFL-Route-Planner/Images"))) ;A path to the Image folder where all images are stored for the project
+(define get_file_path (lambda (filename) (string-append image_folder "/" filename))) ; Gets a path for a specific file
 
-#;(define line_maps (list Tube_map_image Central_line_map Circle_line_map District_line_map Hammersmith_city_line_map Jubilee_line_map Metropolitan_line_map Northern_line_map
+; definitions for image locations
+(definemore (Tube_map_image "Tube map.png")
+  (Central_line_map "Central line.png")
+  (Circle_line_map "Circle line.png")
+  (District_line_map "District line.png")
+  (Hammersmith_city_line_map "Hammersmith city line.png")
+  (Jubilee_line_map "Jubilee line.png")
+  (Metropolitan_line_map "Metropolitan line.png")
+  (Northern_line_map "Northern line.png")
+  (Piccadilly_line_map "Piccadilly line.png")
+  (Victoria_line_map "Victoria line.png")
+  (Waterloo_city_line_map "Waterloo city line.png")
+  (Bakerloo_line_map "Bakerloo line.png"))
+
+(define line_maps (list Tube_map_image Central_line_map Circle_line_map District_line_map Hammersmith_city_line_map Jubilee_line_map Metropolitan_line_map Northern_line_map
                         Piccadilly_line_map Victoria_line_map Waterloo_city_line_map Bakerloo_line_map))
                                      
 ; definitions for station names
@@ -290,11 +294,7 @@
 
 
 (define base_frame (new frame% [label "London Underground Route Planner"][width 400][height 900] ))
-#;(define map_frame (new frame% [label "TFL Underground Map"][width 400][height 400] ))
-#;(define line_map_canvas (new canvas% [parent map_frame][stretchable-width 300][stretchable-height 200]
-                             [style '(hscroll vscroll)][paint-callback (λ (canvas dc) (send dc draw-bitmap (read-bitmap (send map_choice get-value)) 0 0)
-                                                                         (send line_map_canvas get-scroll-range 'horizontal)(send line_map_canvas get-scroll-range 'vertical)
-                                                                         (send line_map_canvas get-virtual-size )(send line_map_canvas init-auto-scrollbars 10 10 100 100))]))
+(define map_frame (new frame% [label "TFL Underground Map"][width 400][height 400] ))
 
 (define global_message (new message% [parent base_frame][label "Please select your start and end Station\nThen click 'Confirm' to see your route"] ))                                                                                                                                        
 (define input_panel (new vertical-panel% [parent base_frame][alignment '(center center)] ))
@@ -310,7 +310,7 @@
 (define london_map (new map-widget% [parent map_panel][position london][zoom 12]))
 
 (define button_panel (new horizontal-panel% [parent input_panel][alignment '(center top)][min-width 300][min-height 30]))
-#;(define line_map_panel (new horizontal-panel% [parent input_panel][alignment '(center top)][min-width 300][min-height 30]))
+(define line_map_panel (new horizontal-panel% [parent input_panel][alignment '(center top)][min-width 300][min-height 30]))
 (define output_panel (new vertical-panel% [parent base_frame][alignment '(center top)][min-width 300][min-height 200]))
 
 (define clear_button (new button% [parent button_panel][label "Clear"][callback (λ (button event)(send start_location_station set-value "")(send end_location_station set-value "")
@@ -327,9 +327,15 @@
                                  (println(string-join (dfs_shorter (send start_location_station get-value) (send end_location_station get-value)) " -> "))
                                  (println (dfs_shorter (send start_location_station get-value) (send end_location_station get-value))))]))
 
-#;(define map_choice (new combo-field% [parent line_map_panel] [label "Line Maps"] [init-value "Choose Line map here"] [choices line_maps][ callback (λ (button event)
-                                                                                                                                                       (send map_frame show #t))]))
-#;(define tfl_map (new button% [parent map_button_panel] [label "Open Map"] [ callback (λ (button event)(send map_frame show #t))] ))
+(define map_choice (new combo-field% [parent line_map_panel][init-value "Tube map.png"][label "Line Maps"][choices line_maps]
+                                                                                                                                                     ))
+(define tfl_map (new button% [parent line_map_panel] [label "Open Map"] [ callback (λ (button event)(send map_frame show #t))] ))
+
+(define line_map_canvas (new canvas% [parent map_frame][stretchable-width 300][stretchable-height 200]
+                             [style '(hscroll vscroll)]
+                             [paint-callback (λ (canvas dc)(println (string-append "Images/" (send map_choice get-value)))
+                                                (send dc draw-bitmap (read-bitmap (string-append "Images/" (send map_choice get-value))) 0 0)
+                                                (send line_map_canvas get-virtual-size )(send line_map_canvas init-manual-scrollbars 10 10 1 1 1 1))]))
 
 (define data_confirm (new message% [parent output_panel] [label "Travel Data:"] [min-width 200] [min-height 10]))
 (define data_output (new text-field% [parent output_panel] [label "\nStart location\n\n->Stops\n\n->End location"] [min-width 250][min-height 270]))
@@ -337,9 +343,6 @@
 
 (send base_frame show #t)
 ;          vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv code body vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-(define imagefolder (path->string (build-path (current-directory) "TFL-Route-Planner\\Images"))) ;A path to the Image folder where all nesseccary images are contained for the project
-(define getfilepath (lambda (filename) (string-append imagefolder "\\" filename)))
 
 (define (edge x graph) (map (λ (y) (first(rest y))) (filter(λ (y) (equal? (car y) x)) graph )))
 
