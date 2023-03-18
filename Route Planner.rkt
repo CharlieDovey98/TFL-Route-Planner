@@ -29,8 +29,8 @@
 ; Map locations:
 (define london #(51.5074 -0.1278))
 
-(define image_folder (path->string (build-path (current-directory) "TFL-Route-Planner/Images"))) ;A path to the Image folder where all images are stored for the project
-(define get_file_path (lambda (filename) (string-append image_folder "/" filename))) ; Gets a path for a specific file
+(define image_folder (path->string (build-path (current-directory) "Images"))) ;A path to the Image folder where all images are stored for the project
+(define get_image_path (lambda (imagename) (string-append image_folder "/" imagename))) ; Gets a path for a specific file
 
 ; definitions for image locations
 (definemore (Tube_map_image "Tube map.png")
@@ -333,8 +333,8 @@
 
 (define line_map_canvas (new canvas% [parent map_frame][stretchable-width 300][stretchable-height 200]
                              [style '(hscroll vscroll)]
-                             [paint-callback (λ (canvas dc)(println (string-append "Images/" (send map_choice get-value)))
-                                                (send dc draw-bitmap (read-bitmap (string-append "Images/" (send map_choice get-value))) 0 0)
+                             [paint-callback (λ (canvas dc)(println (get_image_path (send map_choice get-value)))
+                                                (send dc draw-bitmap (read-bitmap (get_image_path (send map_choice get-value))) 0 0)
                                                 (send line_map_canvas get-virtual-size )(send line_map_canvas init-manual-scrollbars 10 10 1 1 1 1))]))
 
 (define data_confirm (new message% [parent output_panel] [label "Travel Data:"] [min-width 200] [min-height 10]))
