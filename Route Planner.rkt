@@ -338,7 +338,9 @@
                                                 (send line_map_canvas get-virtual-size )(send line_map_canvas init-manual-scrollbars 10 10 1 1 1 1))]))
 
 (define data_confirm (new message% [parent output_panel] [label "Travel Data:"] [min-width 200] [min-height 10]))
-(define data_output (new text-field% [parent output_panel] [label "\nStart location\n\n->Stops\n\n->End location"] [min-width 250][min-height 270]))
+(define data_output (new text-field% [parent output_panel] [label "\nStart location\n\n->Stops\n\n->End location"]
+                                                           [init-value "\n\n      Your route will show here, ^\n      Scrolling may be needed   |\n          To view all stations       v"]
+                                                           [min-width 250][min-height 270]))
 (define global_message2 (new message% [parent base_frame] [label (string-append "Up to date as of "(date->string (seconds->date (current-seconds))))]))
 
 (send base_frame show #t)
