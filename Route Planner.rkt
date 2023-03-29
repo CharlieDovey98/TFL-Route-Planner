@@ -116,13 +116,13 @@
 #;(define victoria_line_stations (list Walthamstow_Central Blackhorse_Road Tottenham_Hale Seven_Sisters Finsbury_Park Highbury_&_Islington Kings_Cross_St_Pancras Euston
                                      Warren_Street Oxford_Circus Green_Park Victoria Pimlico Vauxhall Stockwell Brixton))
 
-(define london_underground_lines (list "victoria_line_stations" ;victoria_line_stations victoria_line_stations
-                                       ;victoria_line_stations victoria_line_stations victoria_line_stations
-                                       ;victoria_line_stations victoria_line_stations victoria_line_stations victoria_line_stations
+#;(define london_underground_lines (list "victoria_line_stations" victoria_line_stations victoria_line_stations
+                                       victoria_line_stations victoria_line_stations victoria_line_stations
+                                       victoria_line_stations victoria_line_stations victoria_line_stations victoria_line_stations
                                        ))
 
                                        
-;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv graphs vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv graph vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 ; A list (londonunderground) representing a Graph with nested lists showing edges for all the nodes(stations)
 ; this graph is built without showing all the edges for each line. Duplicates have been removed to prevent Errors in the DFS Algorithm
 
@@ -285,10 +285,10 @@
                                   ;  Waterloo & City Line Edges without duplicates ^^^^
                                   ))
 
-; vertices of the above graph, gethered through flattening and removing duplicates 
-#; (remove-duplicates (flatten londonunderground))
+(define (nodes graph) (remove-duplicates (flatten graph)))
+;function to get the vertices of an edge/graph ; > (nodes london_underground_graph)
 
-(define combination_box_choices (remove-duplicates (flatten london_underground_graph)))
+(define combination_box_choices (nodes london_underground_graph))
 
 ;         vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Gui instantiation vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -313,22 +313,34 @@
 (define line_map_panel (new horizontal-panel% [parent input_panel][alignment '(center top)][min-width 300][min-height 30]))
 (define output_panel (new vertical-panel% [parent base_frame][alignment '(center top)][min-width 300][min-height 200]))
 
-(define clear_button (new button% [parent button_panel][label "Clear"][callback (λ (button event)(send start_location_station set-value "")(send end_location_station set-value "")
-                                                                           (send data_confirm set-label "Travel Planner Data:"))]))
+(define clear_button (new button% [parent button_panel][label "Clear"]
+                          [callback (λ (button event)
+                                      (send start_location_station set-value "Choose Start Station Here")
+                                      (send end_location_station set-value "Choose End Station Here")
+                                      (send data_confirm set-label "Travel Planner Data:")
+                                      (send data_output set-label "\nStart location\n\n->Stops\n\n->End location")
+                                      (send data_output set-value "\n\n      Your route will show here, ^\n      Scrolling may be needed   |\n          To view all stations       v"))]))
 
-(define switch (new button% [parent button_panel][label "Switch"][callback (λ (button event) (let ([x (list (send start_location_station get-value) (send end_location_station get-value))])
-                                                                                               (send start_location_station set-value (second x))
-                                                                                               (send end_location_station set-value(first x))
-                                                                                               (send data_output set-value " ")))]))
+(define switch (new button% [parent button_panel][label "Switch"]
+                    [callback (λ (button event)
+                                (let ([x (list (send start_location_station get-value) (send end_location_station get-value))])
+                                                 (send start_location_station set-value (second x))
+                                                 (send end_location_station set-value(first x)))
+                                (send data_confirm set-label "Route for your travel:")
+                                (send data_output set-value (string-join (dfs_shorter (send start_location_station get-value) (send end_location_station get-value)) "\n -> "))
+                                (send data_output set-label "\nScrolling may be needed:\nStart location\n->Stops\n->End location")
+                                (println(string-join (dfs_shorter (send start_location_station get-value) (send end_location_station get-value)) " -> "))
+                                (println (dfs_shorter (send start_location_station get-value) (send end_location_station get-value))))]))
+
 (define confirm (new button% [parent button_panel][label "Confirm"]
                      [callback (λ (button event) (send data_confirm set-label "Route for your travel:")
                                  (send data_output set-value (string-join (dfs_shorter (send start_location_station get-value) (send end_location_station get-value)) "\n -> "))
-                                 (send data_output set-label "\nScroll up to see Start location\n\n->Stops\n\n->End location")
+                                 (send data_output set-label "\nScrolling may be needed:\nStart location\n->Stops\n->End location")
                                  (println(string-join (dfs_shorter (send start_location_station get-value) (send end_location_station get-value)) " -> "))
                                  (println (dfs_shorter (send start_location_station get-value) (send end_location_station get-value))))]))
 
-(define map_choice (new combo-field% [parent line_map_panel][init-value "Tube map.png"][label "Line Maps"][choices line_maps]
-                                                                                                                                                     ))
+(define map_choice (new combo-field% [parent line_map_panel][init-value "Tube map.png"][label "Line Maps"][choices line_maps]))
+
 (define tfl_map (new button% [parent line_map_panel] [label "Open Map"] [ callback (λ (button event)(send map_frame show #t))] ))
 
 (define line_map_canvas (new canvas% [parent map_frame][stretchable-width 300][stretchable-height 200]
@@ -337,7 +349,7 @@
                                                 (send dc draw-bitmap (read-bitmap (get_image_path (send map_choice get-value))) 0 0)
                                                 (send line_map_canvas get-virtual-size )(send line_map_canvas init-manual-scrollbars 10 10 1 1 1 1))]))
 
-(define data_confirm (new message% [parent output_panel] [label "Travel Data:"] [min-width 200] [min-height 10]))
+(define data_confirm (new message% [parent output_panel] [label "Travel Planner Data:"] [min-width 200] [min-height 10]))
 (define data_output (new text-field% [parent output_panel] [label "\nStart location\n\n->Stops\n\n->End location"]
                                                            [init-value "\n\n      Your route will show here, ^\n      Scrolling may be needed   |\n          To view all stations       v"]
                                                            [min-width 250][min-height 270]))
@@ -360,8 +372,6 @@
 (define (degree x graph) (length (neighbours x graph)))
 ; degree counts the no. of neighbours a given node has within a graph
 
-(define (nodes graph) (remove-duplicates (flatten graph)))
-;function to get the vertices of an edge/graph ; > (nodes victorialine-graph)
 
 ; (define (connections x graph) (check for connections from a station within the graph)) <<<<<<<<<<<<<<<<< !!
 ; (define (access x graph)
