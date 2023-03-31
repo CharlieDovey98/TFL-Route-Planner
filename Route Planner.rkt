@@ -294,6 +294,56 @@
 
 (define combination_box_choices (nodes london_underground_graph))
 
+;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Struck vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+; This struct will hold station names and their respective distance, time variable plus a vector holding the Longditude and Latitude of the station on the City Map
+
+(struct stations_info (station-name station-distance station-time disabled-access toilet-access station-long-lat)#:mutable)
+
+(define london_underground_struct (list (stations_info Walthamstow_Central 5 68 "Y" "N" #(51.4892 -0.1337))
+                                        (stations_info Blackhorse_Road 12 142 "Y" "N" #(51.5863 -0.0412))
+                                        (stations_info Tottenham_Hale 8 142 "Y" "N" #(51.5886 -0.0596))
+                                        (stations_info Seven_Sisters 6 152 "N" "Y" #(51.5822 -0.0740))
+                                        (stations_info Finsbury_Park 9 102 "Y" "N" #(51.5643 -0.1065))
+                                        (stations_info Highbury_&_Islington 8 150 "Y" "N" #(51.5247 -0.1384))
+                                        (stations_info Kings_Cross_St_Pancras 5 32 "Y" "Y" #(51.5247 -0.1384))
+                                        (stations_info Hammersmith 4 68 "Y" "N" #(51.4936 -0.2253))
+                                        (stations_info Goldhawk_Road 4 79 "Y" "N" #(51.5025 -0.2261))
+                                        (stations_info Shepherd_s_Bush_Market 8 42 "Y" "N" #(51.5051 -0.2267))
+                                        (stations_info Wood_Lane 3 64 "N" "N" #(51.5098 -0.2241))
+                                        (stations_info Latimer_Road 8 144 "Y" "N" #(51.5135 -0.2176))
+                                        (stations_info Ladbroke_Grove 4 102 "Y" "N" #(51.5174 -0.2107))
+                                        (stations_info Westbourne_Park 6 126 "Y" "N" #(51.5211 -0.2013))
+                                        (stations_info Royal_Oak 3 67 "Y" "Y" #(51.5195 -0.1889))
+                                        (stations_info Paddington 2 42 "N" "Y" #(51.5154 -0.1758))
+                                        (stations_info Edgware_Road 6 89 "Y" "N" #(51.5154 -0.1758))
+                                        (stations_info Baker_Street 4 62 "N" "Y" #( 51.5225 -0.1570))
+                                        (stations_info Great_Portland_Street 8 42 "Y" "N" #(51.5235 -0.1432))
+                                        (stations_info Euston_Square 8 72 "Y" "N" #(51.5250 -0.1351))
+                                        (stations_info Farringdon 5 83 "Y" "N" #(51.5202 -0.1055))
+                                        (stations_info Barbican 6 98 "Y" "Y" #(51.5203 -0.0977))
+                                        (stations_info Moorgate 7 103 "N" "Y" #(51.5183 -0.0886))
+                                        (stations_info Liverpool_Street 8 42 "Y" "N" #(51.5178 -0.0824))
+                                        (stations_info Aldgate 8 176 "Y" "N" #(51.5142 -0.0759))
+                                        (stations_info Tower_Hill 58 157 "Y" "N" #(51.5098 -0.0765))
+                                        (stations_info Monument 3 49 "Y" "N" #(51.5108 -0.0847))
+                                        (stations_info Cannon_Street 9 68 "Y" "N" #(51.511353,-0.090212))
+                                        (stations_info Mansion_House 1 125 "N" "Y" #(51.513274,-0.093210))
+                                        (stations_info Blackfriars 2 50 "Y" "Y" #(51.511648,-0.103906))
+                                        (stations_info Temple 8 61 "Y" "N" #(51.511226,-0.114903))))
+
+;(define Walthamstow_Centrals (stations_info "Walthamstow Central" 5 68 #(51.4892 -0.1337)))
+;(define Blackhorse_Roads (stations_info "Blackhorse Road" 12 142 #(51.5863 -0.0412)))
+;(define Tottenham_Hales (stations_info "Tottenham Hale" 8 142 #(51.5886 -0.0596)))
+;(define Seven_Sisterss (stations_info "Seven Sisters" 6 152 #(51.5822 -0.0740)))
+;(define Finsbury_Parks (stations_info "Finsbury Park" 9 102 #(51.5643 -0.1065)))
+;(define Highbury&_Islingtons (stations_info "Highbury & Islington" 8 42 #(51.5247 -0.1384)))
+;(define Kings_Cross_St_Pancrass (stations_info "Kings Cross St Pancras" 5 32 #(51.5247 -0.1384)))
+
+;(stations_info-station-distance Walthamstow_Centrals)
+;(stations_info-station-time Walthamstow_Centrals)
+;(stations_info-station-name Walthamstow_Centrals)
+;(stations_info-station-long-lat Walthamstow_Centrals)
+
 ;         vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Gui instantiation vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 
@@ -361,82 +411,6 @@
 
 (send base_frame show #t)
 
-;; The route function - Not linked to the gui yet and theres not (x y) yet gotta do - Erik
-
-
-(define track (λ (x n) (list (vector x) ;;seven sisters
-                    (vector n)))) ;; Green Park
-
-;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Struck vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-; This struct will hold station names and their respective distance, time variable plus a vector holding the Longditude and Latitude of the station on the City Map
-
-(struct stations_info (station-name station-distance station-time disabled-access toilet-access station-long-lat)#:mutable)
-
-(define london_underground_struct (list (stations_info Walthamstow_Central 5 68 "Y" "N" #(51.4892 -0.1337))
-                                        (stations_info Blackhorse_Road 12 142 "Y" "N" #(51.5863 -0.0412))
-                                        (stations_info Tottenham_Hale 8 142 "Y" "N" #(51.5886 -0.0596))
-                                        (stations_info Seven_Sisters 6 152 "N" "Y" #(51.5822 -0.0740))
-                                        (stations_info Finsbury_Park 9 102 "Y" "N" #(51.5643 -0.1065))
-                                        (stations_info Highbury_&_Islington 8 150 "Y" "N" #(51.5247 -0.1384))
-                                        (stations_info Kings_Cross_St_Pancras 5 32 "Y" "Y" #(51.5247 -0.1384))
-                                        (stations_info Hammersmith 4 68 "Y" "N" #(51.4936 -0.2253))
-                                        (stations_info Goldhawk_Road 4 79 "Y" "N" #(51.5025 -0.2261))
-                                        (stations_info Shepherd_s_Bush_Market 8 42 "Y" "N" #(51.5051 -0.2267))
-                                        (stations_info Wood_Lane 3 64 "N" "N" #(51.5098 -0.2241))
-                                        (stations_info Latimer_Road 8 144 "Y" "N" #(51.5135 -0.2176))
-                                        (stations_info Ladbroke_Grove 4 102 "Y" "N" #(51.5174 -0.2107))
-                                        (stations_info Westbourne_Park 6 126 "Y" "N" #(51.5211 -0.2013))
-                                        (stations_info Royal_Oak 3 67 "Y" "Y" #(51.5195 -0.1889))
-                                        (stations_info Paddington 2 42 "N" "Y" #(51.5154 -0.1758))
-                                        (stations_info Edgware_Road 6 89 "Y" "N" #(51.5154 -0.1758))
-                                        (stations_info Baker_Street 4 62 "N" "Y" #( 51.5225 -0.1570))
-                                        (stations_info Great_Portland_Street 8 42 "Y" "N" #(51.5235 -0.1432))
-                                        (stations_info Euston_Square 8 72 "Y" "N" #(51.5250 -0.1351))
-                                        (stations_info Farringdon 5 83 "Y" "N" #(51.5202 -0.1055))
-                                        (stations_info Barbican 6 98 "Y" "Y" #(51.5203 -0.0977))
-                                        (stations_info Moorgate 7 103 "N" "Y" #(51.5183 -0.0886))
-                                        (stations_info Liverpool_Street 8 42 "Y" "N" #(51.5178 -0.0824))
-                                        (stations_info Aldgate 8 176 "Y" "N" #(51.5142 -0.0759))
-                                        (stations_info Tower_Hill 58 157 "Y" "N" #(51.5098 -0.0765))
-                                        (stations_info Monument 3 49 "Y" "N" #(51.5108 -0.0847))
-                                        (stations_info Cannon_Street 9 68 "Y" "N" #(51.511353,-0.090212))
-                                        (stations_info Mansion_House 1 125 "N" "Y" #(51.513274,-0.093210))
-                                        (stations_info Blackfriars 2 50 "Y" "Y" #(51.511648,-0.103906))
-                                        (stations_info Temple 8 61 "Y" "N" #(51.511226,-0.114903))))
-
-;(define Walthamstow_Centrals (stations_info "Walthamstow Central" 5 68 #(51.4892 -0.1337)))
-;(define Blackhorse_Roads (stations_info "Blackhorse Road" 12 142 #(51.5863 -0.0412)))
-;(define Tottenham_Hales (stations_info "Tottenham Hale" 8 142 #(51.5886 -0.0596)))
-;(define Seven_Sisterss (stations_info "Seven Sisters" 6 152 #(51.5822 -0.0740)))
-;(define Finsbury_Parks (stations_info "Finsbury Park" 9 102 #(51.5643 -0.1065)))
-;(define Highbury&_Islingtons (stations_info "Highbury & Islington" 8 42 #(51.5247 -0.1384)))
-;(define Kings_Cross_St_Pancrass (stations_info "Kings Cross St Pancras" 5 32 #(51.5247 -0.1384)))
-
-;(stations_info-station-distance Walthamstow_Centrals)
-;(stations_info-station-time Walthamstow_Centrals)
-;(stations_info-station-name Walthamstow_Centrals)
-;(stations_info-station-long-lat Walthamstow_Centrals)
-
-(define (add-track-to-map londonmap station-names)
-  (let* ((stations (map (lambda (name)
-                          (findf (lambda (station) (equal? (stations_info-station-name station) name))
-                                 london_underground_struct))
-                        station-names))
-         (coordinates (map stations_info-station-long-lat stations)))
-    (send londonmap add-track coordinates 'my-group)))
-
-;(add-track-to-map londonmap '("Walthamstow Central" "Finsbury Park"))
-
-#;(define (update-map start-location end-location)
-  (let* ((start-info (findf (lambda (station) (equal? (stations_info-station-name station) start-location))
-                            london_underground_struct))
-         (end-info (findf (lambda (station) (equal? (stations_info-station-name station) end-location))
-                          london_underground_struct)))
-    (add-track-to-map londonmap (list start-location end-location))
-  
-    (send londonmap pan-to (apply vector start-info 'station-long-lat))
-    (send base-frame show #t)))
-
 
 ;          vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv code body vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -478,5 +452,33 @@
     [else
      (let ((route (depth_first_search (first x) y workinglist)))
        (if (equal? route #f) (dfs_helper (rest x) y workinglist) route))] ))
+
+
+;; The route function - Not linked to the gui yet and theres not (x y) yet gotta do - Erik
+
+
+(define track (λ (x n) (list (vector x) ;;seven sisters
+                    (vector n)))) ;; Green Park
+
+
+(define (add-track-to-map londonmap station-names)
+  (let* ((stations (map (lambda (name)
+                          (findf (lambda (station) (equal? (stations_info-station-name station) name))
+                                 london_underground_struct))
+                        station-names))
+         (coordinates (map stations_info-station-long-lat stations)))
+    (send londonmap add-track coordinates 'my-group)))
+
+;(add-track-to-map londonmap '("Walthamstow Central" "Finsbury Park"))
+
+#;(define (update-map start-location end-location)
+  (let* ((start-info (findf (lambda (station) (equal? (stations_info-station-name station) start-location))
+                            london_underground_struct))
+         (end-info (findf (lambda (station) (equal? (stations_info-station-name station) end-location))
+                          london_underground_struct)))
+    (add-track-to-map londonmap (list start-location end-location))
+  
+    (send londonmap pan-to (apply vector start-info 'station-long-lat))
+    (send base-frame show #t)))
 
 ; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
