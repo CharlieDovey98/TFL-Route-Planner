@@ -1,18 +1,19 @@
-#lang racket
-(require racket/gui)  ; import Rvket Gui library
-(require graph)       ; import graph library
-(require racket/trace); import trace functionality
-(require racket/gui map-widget) ;import map-widget library
-(require racket/date) ; import racket date and time capabilities
-(require json)        ; import JSON file capabilities
 
-                          #|      Group 4 TFL TRAVEL APP WITH GUI      Prototype 03 Graphs     |#
+                                                         #|     @Group4 TFL TRAVEL APP     |#
+#lang racket
+(require racket/gui)            ; import Racket Gui library
+(require graph)                 ; import graph library
+(require racket/trace)          ; import trace functionality
+(require racket/gui map-widget) ; import map-widget library
+(require racket/date)           ; import racket date and time capabilities
+(require json)                  ; import JSON file capabilities
+
 ;              vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Notes vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 ; To Do:
 ; write to and read from a json file
 ; working map with plottable routes
-; zoomable images of underground lines
+; zoomable/ scrollable images of underground lines
 ; colourize syntax according to the line it belongs to
 ; add a "change to 'line'" when user needs to change lines during their route
 
@@ -30,7 +31,10 @@
 (define london #(51.5074 -0.1278))
 
 (define image_folder (path->string (build-path (current-directory) "Images"))) ;A path to the Image folder where all images are stored for the project
-(define get_image_path (lambda (imagename) (string-append image_folder "/" imagename))) ; Gets a path for a specific file
+; "/Users/charliedovey/Documents/TFL-Route-Planner/Images"
+(define get_image_path (lambda (imagename) (string-append image_folder "/" imagename))) ; Gets a path for a specific image file
+; > (get_image_path "Metropolitan line.png")
+; "/Users/charliedovey/Documents/TFL-Route-Planner/Images/Metropolitan line.png"
 
 ; definitions for image locations
 (definemore (Tube_map_image "Tube map.png")
@@ -76,7 +80,7 @@
   (Bow_Road "Bow Road") (Mile_End "Mile End") (West_Kensington "West Kensington")
   (Stepney_Green "Stepney Green") (Whitechapel "Whitechapel") (Aldgate_East "Aldgate East") (Tower_Hill "Tower Hill") (Cannon_Street "Cannon Street") (Mansion_House "Mansion House")
   (Edgware_Road "Edgware Road") (West_Brompton "West Brompton") (Kensington_Olympia "Kensington (Olympia)") (Fulham_Broadway "Fulham Broadway") (Parsons_Green "Parsons Green")
-  (Putney_Bridge "Putney Bridge") (East_Putney "East Putney") (Southfields "Southfields") (Wimbledon_Park "Winbledon Park") (Wimbledon "Wimbledon") (Barons_Court "Barons Court")
+  (Putney_Bridge "Putney Bridge") (East_Putney "East Putney") (Southfields "Southfields") (Wimbledon_Park "Wimbledon Park") (Wimbledon "Wimbledon") (Barons_Court "Barons Court")
   (Ravenscourt_Park "Ravenscourt Park") (Stamford_Brook "Stamford Brook") (Turnham_Green "Turnham Green") (Chiswick_Park "Chiswick Park") (Gunnersbury "Gunnersbury") (Kew_Gardens "Key Gardens")
   (Richmond "Richmond") (Ealing_Broadway "Ealing Broadway")
   ;  District Line Stations ^^^^              Central Line Stations vvvvv
@@ -294,7 +298,7 @@
 
 
 (define base_frame (new frame% [label "London Underground Route Planner"][width 400][height 900] ))
-(define map_frame (new frame% [label "TFL Underground Map"][width 400][height 400] ))
+(define map_frame (new frame% [label "TFL Underground Map"][width 400][height 900] ))
 
 (define global_message (new message% [parent base_frame][label "Please select your start and end Station\nThen click 'Confirm' to see your route"] ))                                                                                                                                        
 (define input_panel (new vertical-panel% [parent base_frame][alignment '(center center)] ))
@@ -356,27 +360,105 @@
 (define global_message2 (new message% [parent base_frame] [label (string-append "Up to date as of "(date->string (seconds->date (current-seconds))))]))
 
 (send base_frame show #t)
+
+;; The route function - Not linked to the gui yet and theres not (x y) yet gotta do - Erik
+
+
+(define track (λ (x n) (list (vector x) ;;seven sisters
+                    (vector n)))) ;; Green Park
+
+;; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv Struck vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+; This struct will hold station names and their respective distance, time variable plus a vector holding the Longditude and Latitude of the station on the City Map
+
+(struct stations_info (station-name station-distance station-time disabled-access toilet-access station-long-lat)#:mutable)
+
+(define london_underground_struct (list (stations_info Walthamstow_Central 5 68 "Y" "N" #(51.4892 -0.1337))
+                                        (stations_info Blackhorse_Road 12 142 "Y" "N" #(51.5863 -0.0412))
+                                        (stations_info Tottenham_Hale 8 142 "Y" "N" #(51.5886 -0.0596))
+                                        (stations_info Seven_Sisters 6 152 "N" "Y" #(51.5822 -0.0740))
+                                        (stations_info Finsbury_Park 9 102 "Y" "N" #(51.5643 -0.1065))
+                                        (stations_info Highbury_&_Islington 8 150 "Y" "N" #(51.5247 -0.1384))
+                                        (stations_info Kings_Cross_St_Pancras 5 32 "Y" "Y" #(51.5247 -0.1384))
+                                        (stations_info Hammersmith 4 68 "Y" "N" #(51.4936 -0.2253))
+                                        (stations_info Goldhawk_Road 4 79 "Y" "N" #(51.5025 -0.2261))
+                                        (stations_info Shepherd_s_Bush_Market 8 42 "Y" "N" #(51.5051 -0.2267))
+                                        (stations_info Wood_Lane 3 64 "N" "N" #(51.5098 -0.2241))
+                                        (stations_info Latimer_Road 8 144 "Y" "N" #(51.5135 -0.2176))
+                                        (stations_info Ladbroke_Grove 4 102 "Y" "N" #(51.5174 -0.2107))
+                                        (stations_info Westbourne_Park 6 126 "Y" "N" #(51.5211 -0.2013))
+                                        (stations_info Royal_Oak 3 67 "Y" "Y" #(51.5195 -0.1889))
+                                        (stations_info Paddington 2 42 "N" "Y" #(51.5154 -0.1758))
+                                        (stations_info Edgware_Road 6 89 "Y" "N" #(51.5154 -0.1758))
+                                        (stations_info Baker_Street 4 62 "N" "Y" #( 51.5225 -0.1570))
+                                        (stations_info Great_Portland_Street 8 42 "Y" "N" #(51.5235 -0.1432))
+                                        (stations_info Euston_Square 8 72 "Y" "N" #(51.5250 -0.1351))
+                                        (stations_info Farringdon 5 83 "Y" "N" #(51.5202 -0.1055))
+                                        (stations_info Barbican 6 98 "Y" "Y" #(51.5203 -0.0977))
+                                        (stations_info Moorgate 7 103 "N" "Y" #(51.5183 -0.0886))
+                                        (stations_info Liverpool_Street 8 42 "Y" "N" #(51.5178 -0.0824))
+                                        (stations_info Aldgate 8 176 "Y" "N" #(51.5142 -0.0759))
+                                        (stations_info Tower_Hill 58 157 "Y" "N" #(51.5098 -0.0765))
+                                        (stations_info Monument 3 49 "Y" "N" #(51.5108 -0.0847))
+                                        (stations_info Cannon_Street 9 68 "Y" "N" #(51.511353,-0.090212))
+                                        (stations_info Mansion_House 1 125 "N" "Y" #(51.513274,-0.093210))
+                                        (stations_info Blackfriars 2 50 "Y" "Y" #(51.511648,-0.103906))
+                                        (stations_info Temple 8 61 "Y" "N" #(51.511226,-0.114903))))
+
+;(define Walthamstow_Centrals (stations_info "Walthamstow Central" 5 68 #(51.4892 -0.1337)))
+;(define Blackhorse_Roads (stations_info "Blackhorse Road" 12 142 #(51.5863 -0.0412)))
+;(define Tottenham_Hales (stations_info "Tottenham Hale" 8 142 #(51.5886 -0.0596)))
+;(define Seven_Sisterss (stations_info "Seven Sisters" 6 152 #(51.5822 -0.0740)))
+;(define Finsbury_Parks (stations_info "Finsbury Park" 9 102 #(51.5643 -0.1065)))
+;(define Highbury&_Islingtons (stations_info "Highbury & Islington" 8 42 #(51.5247 -0.1384)))
+;(define Kings_Cross_St_Pancrass (stations_info "Kings Cross St Pancras" 5 32 #(51.5247 -0.1384)))
+
+;(stations_info-station-distance Walthamstow_Centrals)
+;(stations_info-station-time Walthamstow_Centrals)
+;(stations_info-station-name Walthamstow_Centrals)
+;(stations_info-station-long-lat Walthamstow_Centrals)
+
+(define (add-track-to-map londonmap station-names)
+  (let* ((stations (map (lambda (name)
+                          (findf (lambda (station) (equal? (stations_info-station-name station) name))
+                                 london_underground_struct))
+                        station-names))
+         (coordinates (map stations_info-station-long-lat stations)))
+    (send londonmap add-track coordinates 'my-group)))
+
+;(add-track-to-map londonmap '("Walthamstow Central" "Finsbury Park"))
+
+#;(define (update-map start-location end-location)
+  (let* ((start-info (findf (lambda (station) (equal? (stations_info-station-name station) start-location))
+                            london_underground_struct))
+         (end-info (findf (lambda (station) (equal? (stations_info-station-name station) end-location))
+                          london_underground_struct)))
+    (add-track-to-map londonmap (list start-location end-location))
+  
+    (send londonmap pan-to (apply vector start-info 'station-long-lat))
+    (send base-frame show #t)))
+
+
 ;          vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv code body vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 (define (edge x graph) (map (λ (y) (first(rest y))) (filter(λ (y) (equal? (car y) x)) graph )))
+; edge gets all edges of the input station from the given graph; > (edge Walthamstow_Central london_underground_graph) = '("Blackhorse Road")
 
 (define (adults x graph) (map second (filter (λ (edge) (equal? x (first edge))) graph)))
-; adults returns the nodes that x is related TO; > (adults "Euston" g) = '("Warren Street") Euston -> Warren St
+; adults returns the nodes that x is related TO; > (adults Tottenham_Hale london_underground_graph) = '("Seven Sisters" "Blackhorse Road")
 
 (define (children x graph) (map first (filter (λ (edge) (equal? x (second edge))) graph)))
-; children returns the nodes that x is related FROM; > (adults "Euston" g) = '("Kings Cross St Pancras") KC,SP -> Euston
+; children returns the nodes that x is related FROM; > (children Tottenham_Hale london_underground_graph) = '("Blackhorse Road" "Seven Sisters")
 
-(define (neighbours x graph) (append (children x graph) (adults x graph)))
-; neighbours returns a list with the children and adult nodes of x; > (neighbours "Euston" g) = '("Kings Cross St Pancras" "Warren Street")
+(define (neighbours x graph) (remove-duplicates (append (children x graph) (adults x graph))))
+; neighbours returns a list with the children and adult nodes of x; > (neighbours Tottenham_Hale london_underground_graph) = '("Blackhorse Road" "Seven Sisters")
 
 (define (degree x graph) (length (neighbours x graph)))
-; degree counts the no. of neighbours a given node has within a graph
+; degree counts the no. of neighbours a given node has within a graph; > (degree Tottenham_Hale london_underground_graph) = 2
 
 
-; (define (connections x graph) (check for connections from a station within the graph)) <<<<<<<<<<<<<<<<< !!
-; (define (access x graph)
-; (define (toilets x graph)
-;
+; (define (connections x graph) (check for connections from a station within the graph)) 
+; (define (disabled_access x graph) (check for disabled_access for a station within the graph))
+; (define (toilets x graph) (check for Toilet access for a station within the graph))
 
 
 (define (dfs_shorter x y) (depth_first_search x y (list )))
@@ -396,3 +478,5 @@
     [else
      (let ((route (depth_first_search (first x) y workinglist)))
        (if (equal? route #f) (dfs_helper (rest x) y workinglist) route))] ))
+
+; vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
